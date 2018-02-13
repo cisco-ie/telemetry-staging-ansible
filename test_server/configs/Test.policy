@@ -1,0 +1,18 @@
+    {
+    "Name": "Test",
+    "Metadata": {
+         "Version": 1,
+         "Description": "This is a sample policy",
+         "Comment": "This is the first draft",
+        "Identifier": "iosXRv Vagrant instance"
+    },
+    "CollectionGroups": {
+         "FirstGroup": {
+             "Period": 30,
+             "Paths": [
+             "RootOper.InfraStatistics.Interface(*).Latest.GenericCounters"
+             ]
+           }
+        }
+    }
+

@@ -1,0 +1,270 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Kapacitor system cpu-utilization",
+		"_postman_id": "deeffc9f-71f7-36a2-fddf-b63022f65621",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "retrive tasks",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "retrive cpu-utilization task",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks/cpu_alert_one_minute",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create 20/10/5 alram on cpu-utilization",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"cpu_alert_one_minute\",\n    \"type\" : \"stream\",\n    \"status\" : \"enabled\",\n    \"dbrps\": [{\"db\": \"mdt_db\", \"rp\" : \"test6h\"}],\n    \"script\": \"stream\\n  |from()\\n  .measurement('Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization')\\n  .groupBy('Producer','process-cpu__process-name')\\n  |alert()\\n .info(lambda: \\\"total-cpu-one-minute\\\" > 5)\\n  .warn(lambda: \\\"total-cpu-one-minute\\\" > 10)\\n  .crit(lambda: \\\"total-cpu-one-minute\\\" > 20)\\n  .message('Custom message - total-cpu-one-minute usage is {{ .Level }}')\\n  .log('/tmp/alerts.log')\\n  //.tcp('10.67.30.126:8411')\\n  .post('http://10.67.30.109:8080')\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete specific task cpu_alert_one_minute",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks/cpu_alert_one_minute",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "disable system-monitoring/cpu-utilization",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks/cpu_alert_one_minute",
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\" : \"disabled\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "enable system-monitoring/cpu-utilization",
+			"request": {
+				"url": "http://10.67.30.109:9092/kapacitor/v1/tasks/cpu_alert_one_minute",
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\" : \"enabled\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Trigger critical CPU alarms in mdt_db&rp=test6h",
+			"request": {
+				"url": {
+					"raw": "http://10.67.30.109:8086/write?db=mdt_db&rp=test6h",
+					"protocol": "http",
+					"auth": {},
+					"host": [
+						"10",
+						"67",
+						"30",
+						"109"
+					],
+					"port": "8086",
+					"path": [
+						"write"
+					],
+					"query": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "rp",
+							"value": "test6h",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,EncodingPath=Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,Producer=Marco,node-name=0/RSP0/CPU0,process-cpu__process-name=marcoprocess total-cpu-one-minute=30i"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Trigger warn CPU alarms in mdt_db&rp=test6h",
+			"request": {
+				"url": {
+					"raw": "http://10.67.30.109:8086/write?db=mdt_db&rp=test6h",
+					"protocol": "http",
+					"auth": {},
+					"host": [
+						"10",
+						"67",
+						"30",
+						"109"
+					],
+					"port": "8086",
+					"path": [
+						"write"
+					],
+					"query": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "rp",
+							"value": "test6h",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,EncodingPath=Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,Producer=Marco,node-name=0/RSP0/CPU0,process-cpu__process-name=marcoprocess total-cpu-one-minute=20i"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Trigger info CPU alarms in mdt_db&rp=test6h",
+			"request": {
+				"url": {
+					"raw": "http://10.67.30.109:8086/write?db=mdt_db&rp=test6h",
+					"protocol": "http",
+					"auth": {},
+					"host": [
+						"10",
+						"67",
+						"30",
+						"109"
+					],
+					"port": "8086",
+					"path": [
+						"write"
+					],
+					"query": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "rp",
+							"value": "test6h",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,EncodingPath=Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,Producer=Marco,node-name=0/RSP0/CPU0,process-cpu__process-name=marcoprocess total-cpu-one-minute=10i"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Trigger clear CPU alarms in mdt_db&rp=test6h",
+			"request": {
+				"url": {
+					"raw": "http://10.67.30.109:8086/write?db=mdt_db&rp=test6h",
+					"protocol": "http",
+					"auth": {},
+					"host": [
+						"10",
+						"67",
+						"30",
+						"109"
+					],
+					"port": "8086",
+					"path": [
+						"write"
+					],
+					"query": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "rp",
+							"value": "test6h",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,EncodingPath=Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,Producer=Marco,node-name=0/RSP0/CPU0,process-cpu__process-name=marcoprocess total-cpu-one-minute=2i"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

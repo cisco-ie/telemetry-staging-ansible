@@ -1,0 +1,53 @@
+---
+
+### Requirement:
+# NTP client requires server IP passes as "ntp_ip" extra-var (i.e. --extra-vars "ntp_ip=all.ntp.esl.cisco.com" if Cisco internal or a pubblic NTP server)
+
+- hosts: all
+  become: true
+  gather_facts: yes
+
+  pre_tasks:
+
+    - name: Update and update all packages to the latest version
+      # Uncomment below for upgrade 
+      apt:
+        update_cache: yes
+        #upgrade: dist
+      tags: always
+
+  roles:
+
+    ### Installing easy_install and pip
+    - git
+    
+    ### Installing docker
+    - docker
+    
+    ### Taking care of the NTP configuration, a must for working with telemetry
+    - ntp
+    
+    ### Ansible is used from local utilities to manage the telemetry stack 
+    - ansible
+
+    ### Deploying enviroment (Pipeline, stacks and utility) - takes tag Lab for: XR_util, exabgp and Ostinato)
+    - environment
+
+    ## Deploy utilities used in the XRv-server lab (not used for POC)
+    - lab
+    
+    ### Create an Ansible Vault file with the username, password and sudo password
+    ### encryption password is the provided username password
+    - secret-vault
+
+  post_tasks:
+
+    - name: Successful completion message
+      vars:
+        msg: |
+            ************************************************************************************
+            Provisioning completed.
+            ************************************************************************************
+      debug:
+        msg: "{{ msg.split('\n') }}"
+      tags: always

@@ -1,0 +1,10 @@
+[Unit]
+Description= "start and stop Pipeline ( using Systemd)"
+
+[Service]
+Type=simple
+WorkingDirectory=~
+ExecStart=/usr/local/bin/pipeline_start.sh
+ExecStop=/usr/local/bin/pipeline_stop.sh
+RemainAfterExit=yes
+User=vagrant

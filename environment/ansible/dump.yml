@@ -1,0 +1,81 @@
+---
+
+# toggel dump.txt
+# expect variable to_status [enable|disable] 
+
+- hosts: server
+  become: true
+  gather_facts: no
+  vars:
+    status: "disable"
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+
+  tasks:
+
+  - name: Checking if Pipeline exist as service
+    stat: 
+      path: /etc/init/pipeline.conf
+    register: pipeline_init
+
+  - name: Checking Pipeline process status    
+    command: bash -c "service pipeline status"
+    register: pipeline_status
+    when: pipeline_init.stat.exists == true
+
+  - name: Retriving Pipeline configuration for dump of metrics
+    command: bash -c "cat {{ pipeline_conf }}  | grep '{{ dump_path_config }}' | cut -c1-1"
+    register: check
+    ignore_errors: yes 
+
+  - name: Checking the current status for dumpening of metrics
+    set_fact:
+      status: "enable"
+    when: check.stdout != "#"   
+ 
+  - name: 
+    pause: prompt=' Current status is {{ status }}, do you want to change it? If runnning, I will reload Pipeline! \n Press return to continue. Press Ctrl+c and then "a" to abort' 
+  
+  - name: Enable dump in Pipeline configuration
+    replace:
+      name: "{{ pipeline_conf }}"
+      regexp: '^#{{ dump_path_config }}'
+      replace: '{{ dump_path_config }}'
+    when: check.stdout == "#"
+
+  - name: Disable dump in Pipeline configuration
+    replace:
+      name: "{{ pipeline_conf }}"
+      regexp: '^{{ dump_path_config }}'
+      replace: '#{{ dump_path_config }}'
+    when: check.stdout != "#"
+
+#  - name: Stopping Pipeline
+#    service:
+#      name: pipeline
+#      state: stopped
+#    #when: pipeline_init.stat.exists == "true"
+#    when: pipeline_init.stat.exists == true and 'running' in pipeline_status.stdout
+
+#  - name: Reloading Pipeline
+#    service:
+#      name: pipeline
+#      state: started
+#    when: pipeline_init.stat.exists == true and 'running' in pipeline_status.stdout
+
+  # I am realoading the Pipeline because when stopping Influx, the tool remove the Influx configuration from pipeline.conf
+  - name: Reload Pipeline (init)
+    service:
+      name: pipeline
+      #state: reloaded
+      state: restarted
+    when: pipeline_init.stat.exists == true

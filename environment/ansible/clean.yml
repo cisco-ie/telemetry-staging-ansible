@@ -1,0 +1,70 @@
+---
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+
+  - name: Check if Pipeline service is configured
+    stat:
+      path: "/etc/init/pipeline.conf"
+    register: pipeline_init
+
+  tasks:
+
+  - name: Stop Pipeline process ( doesn't stop Pipeline if manually launched)
+    service:
+      name: pipeline
+      state: stopped
+    when: pipeline_init.stat.exists == True
+
+  - name: Shutdown and delete Influx, Grafana & Kapacitor containers
+    docker_service:
+      project_src: "{{env_path}}"
+      state: absent
+    become: false
+
+  - name: Shutdown and delete  Kafka (single broker) and zookeper 
+    docker_service:
+      project_src: "{{env_path}}/kafka-docker"
+      files: "docker-compose-single-broker.yml"
+      state: absent
+    become: false
+
+  - name: Clean data directory
+    file:
+      state: absent
+      path: "{{ data_path }}"
+
+  - name: Clean log directory
+    file:
+      state: absent
+      path: "{{ log_path }}"
+
+ 
+  - name: Remove pipeline.conf from upstart configuration (/etc/init/)
+    file:
+      state: absent
+      path: "/etc/init/pipeline.conf"
+
+  - name: Remove Influx consumer from pipeline.conf
+    blockinfile:
+      path: "{{env_path}}/pipeline.conf"
+      state: absent
+      marker: "#<!-- {mark} Ansible Managed  - Influx Config -->"
+
+  - name: Remove Kafka producer from pipeline.conf
+    blockinfile:
+      path: "{{env_path}}/pipeline.conf"
+      state: absent
+      marker: "#<!-- {mark} Ansible Managed  - Kafka Config -->"

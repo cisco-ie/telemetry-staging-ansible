@@ -1,0 +1,251 @@
+[
+	{
+		"basepath" : "Cisco-IOS-XR-mpls-lsd-oper:mpls-lsd-nodes/mpls-lsd-node/label-summary",
+		"spec" : {
+			"fields" : [
+				{"name" : "node-name", "tag" : true},
+				{"name" : "total-labels"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-mpls-vpn-oper:l3vpn/vrfs/vrf",
+		"spec" : {
+			"fields" : [
+				{"name" : "vrf-name", "tag" : true},
+				{"name" : "route-distinguisher"},
+				{
+					"name" : "interfaces",
+					"fields" : [
+						{"name" : "interface-name"}
+					]
+				}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-bundlemgr-oper:bundle-information/bundle-briefs/bundle-brief/bundle-brief-item",
+		"spec" : {
+			"fields" : [
+				{"name" : "bundle-interface", "tag" : true},
+				{"name" : "bundle-interface-name"},
+				{
+					"name" : "active-member-count"
+				}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-ip-rib-ipv6-oper:ipv6-rib/vrfs/vrf/afs/af/safs/saf/ip-rib-route-table-names/ip-rib-route-table-name/protocol/bgp/as/information",
+		"spec" : {
+			"fields" : [
+				{"name" : "vrf-name", "tag" : true},
+				{"name" : "af-name", "tag" : true},
+				{"name" : "saf-name", "tag" : true},
+				{"name" : "route-table-name", "tag" : true},
+				{"name" : "as", "tag" : true},
+				{"name" : "routes-counts"},
+				{"name" : "active-routes-count"},
+				{"name" : "deleted-routes-count"},
+				{"name" : "paths-count"},
+				{"name" : "protocol-route-memory"},
+				{"name" : "backup-routes-count"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-ip-rib-ipv4-oper:rib/vrfs/vrf/afs/af/safs/saf/ip-rib-route-table-names/ip-rib-route-table-name/protocol/ospf/as/information",
+		"spec" : {
+			"fields" : [
+				{"name" : "vrf-name", "tag" : true},
+				{"name" : "af-name", "tag" : true},
+				{"name" : "saf-name", "tag" : true},
+				{"name" : "route-table-name", "tag" : true},
+				{"name" : "as", "tag" : true},
+				{"name" : "routes-counts"},
+				{"name" : "active-routes-count"},
+				{"name" : "deleted-routes-count"},
+				{"name" : "paths-count"},
+				{"name" : "protocol-route-memory"},
+				{"name" : "backup-routes-count"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-ip-rib-ipv4-oper:rib/vrfs/vrf/afs/af/safs/saf/ip-rib-route-table-names/ip-rib-route-table-name/protocol/bgp/as/information",
+		"spec" : {
+			"fields" : [
+				{"name" : "vrf-name", "tag" : true},
+				{"name" : "af-name", "tag" : true},
+				{"name" : "saf-name", "tag" : true},
+				{"name" : "route-table-name", "tag" : true},
+				{"name" : "as", "tag" : true},
+				{"name" : "routes-counts"},
+				{"name" : "active-routes-count"},
+				{"name" : "deleted-routes-count"},
+				{"name" : "paths-count"},
+				{"name" : "protocol-route-memory"},
+				{"name" : "backup-routes-count"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/generic-counters",
+		"spec" : {
+			"fields" : [
+				{"name" : "interface-name", "tag" : true},
+				{"name" : "packets-received"},
+				{"name" : "bytes-received"},
+				{"name" : "packets-sent", "track": true},
+				{"name" : "bytes-sent"},
+				{"name" : "output-drops"},
+				{"name" : "output-queue-drops"},
+				{"name" : "input-drops"},
+				{"name" : "input-queue-drops"},
+				{"name" : "input-errors"},
+				{"name" : "crc-errors"},
+				{"name" : "input-ignored-packets"},
+				{"name" : "output-errors"},
+				{"name" : "output-buffer-failures"},
+				{"name" : "carrier-transitions"}
+			]
+		}
+	},
+        {
+                "basepath" : "Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate",
+                "spec" : {
+                        "fields" : [
+                                {"name" : "interface-name", "tag" : true},
+                                {"name" : "input-data-rate"},
+                                {"name" : "input-packet-rate"},
+                                {"name" : "output-data-rate", "track": true},
+                                {"name" : "output-packet-rate"},
+                                {"name" : "peak-input-data-rate"},
+                                {"name" : "peak-input-packet-rate"},
+                                {"name" : "peak-output-data-rate"},
+                                {"name" : "peak-output-packet-rate"},
+                                {"name" : "bandwidth"},
+                                {"name" : "load-interval"},
+                                {"name" : "output-load"},
+                                {"name" : "input-load"},
+                                {"name" : "reliability"}
+                        ]
+                }
+        },
+	{
+		"basepath" : "Cisco-IOS-XR-mpls-te-oper:mpls-te/tunnels/tunnel-auto-bandwidths/tunnel-auto-bandwidth",
+		"spec" : {
+			"fields" : [
+				{"name" : "tunnel-name", "tag" : true},
+				{"name" : "highest-bandwidth"},
+				{"name" : "last-sample-bandwidth"},
+				{"name" : "samples-collected"},
+				{"name" : "tunnel-requested-bandwidth"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-qos-ma-oper:qos/interface-table/interface/output/statistics",
+		"spec" : {
+			"fields" : [
+				{"name" : "interface-name", "tag" : true},
+				{"name" : "policy-name", "tag" : true},
+				{
+					"name" : "class-stats",
+					"fields" : [
+						{"name" : "class-name", "tag" : true},
+						{
+							"name" : "general-stats",
+							"fields" : [
+								{"name" : "transmit-packets"},
+								{"name" : "transmit-bytes"},
+								{"name" : "total-drop-packets"},
+								{"name" : "total-drop-bytes"},
+								{"name" : "total-drop-rate"},
+								{"name" : "total-transmit-rate"}
+							]
+						},
+						{
+							"name" : "queue-stats-array",
+							"fields" : [
+								{"name" : "queue-id", "tag" : true},
+								{"name" : "tail-drop-packets"},
+								{"name" : "tail-drop-bytes"},
+								{
+									"name" : "queue-average-length",
+									"fields" : [
+										{"name" : "value"},
+										{"name" : "unit", "tag" : true}
+									]
+								},
+								{"name" : "random-drop-packets"},
+								{"name" : "random-drop-bytes"},
+								{"name" : "conform-packets"},
+								{"name" : "conform-bytes"},
+								{"name" : "exceed-packets"},
+								{"name" : "exceed-bytes"}
+							]
+						}
+					]
+				}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-procmem-oper:processes-memory/nodes/node/process-ids/process-id",
+		"spec" : {
+			"fields" : [
+				{"name":"node-name", "tag": true},
+				{"name":"name", "tag": true},
+				{"name":"text-seg-size"},
+				{"name":"data-seg-size"},
+				{"name":"stack-seg-size"},
+				{"name":"malloc-size"}
+			]
+		}
+	},
+	{
+		"basepath" : "Cisco-IOS-XR-nto-misc-shmem-oper:memory-summary/nodes/node/summary",
+		"spec" : {
+			"fields" : [
+				{"name":"node-name", "tag": true},
+				{"name":"ram-memory"},
+				{"name":"free-physical-memory"},
+				{"name":"system-ram-memory"},
+				{"name":"free-application-memory"}
+			]
+		}
+	},
+        {
+                "basepath" : "Cisco-IOS-XR-nto-misc-oper:memory-summary/nodes/node/summary",
+                "spec" : {
+                        "fields" : [
+                                {"name":"node-name", "tag": true},
+                                {"name":"ram-memory"},
+                                {"name":"free-physical-memory"},
+                                {"name":"system-ram-memory"},
+                                {"name":"free-application-memory"}
+                        ]
+                }
+        },
+	{
+		"basepath" : "Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization",
+		"spec" : {
+			"fields" : [
+				{"name":"node-name", "tag": true},
+				{"name":"total-cpu-one-minute"},
+				{"name":"total-cpu-five-minute"},
+				{"name":"total-cpu-fifteen-minute"},
+				{
+					"name":"process-cpu",
+					"fields" : [
+						{"name":"process-name", "tag": true},
+						{"name":"process-cpu-one-minute"},
+						{"name":"process-cpu-five-minute"},
+						{"name":"process-cpu-fifteen-minute"}
+					]
+				}
+			]
+		}
+	}
+]

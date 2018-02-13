@@ -1,0 +1,434 @@
+{
+	"variables": [],
+	"info": {
+		"name": "1 - InfluxDB_explore_metric_dCloud",
+		"_postman_id": "8113c39e-7b6e-ef05-508e-f521f3dbb696",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "show databases",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "q",
+							"value": "show databases",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show measurements",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show measurements",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show tag keys from “<measurement_name>”",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show tag values from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" with key = \"interface-name\"",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show tag values from “<measurement_name>” with key = \"<tag_name>\"",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show tag values from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" with key = \"interface-name\"",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show SERIES from “<measurement_name>”",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show series from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\"",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show field keys from “<measurement_name>”",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show field keys from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\"",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "InfluxDB select example with fields, tags and limit",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "select \"input-data-rate\", \"output-data-rate\" from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" where  Producer='test_XR' and \"interface-name\" = 'GigabitEthernet0/0/0/0' limit 5",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "InfluxDB select example using last function",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "select last(\"input-data-rate\") from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" where  Producer='test_XR' and \"interface-name\" = 'GigabitEthernet0/0/0/0'",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "InfluxDB select example using mean function",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "select last(\"input-data-rate\") from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" where  Producer='test_XR' and \"interface-name\" = 'GigabitEthernet0/0/0/0'",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "InfluxDB select example with last minute data points",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "select \"input-data-rate\", \"output-data-rate\" from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" where  Producer='test_XR' and \"interface-name\" = 'GigabitEthernet0/0/0/0'  and time > now() - 1m",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show retention policies",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "select mean(\"input-data-rate\") from \"Cisco-IOS-XR-infra-statsd-oper:infra-statistics/interfaces/interface/latest/data-rate\" where  Producer='test_XR' and \"interface-name\" = 'GigabitEthernet0/0/0/0'",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all Data Series",
+			"request": {
+				"url": "http://{{server}}:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "DROP SERIES FROM /.*/",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "show subscriptions",
+			"request": {
+				"url": "http://10.67.30.109:8086/query",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "db",
+							"value": "mdt_db",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "q",
+							"value": "show subscriptions",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

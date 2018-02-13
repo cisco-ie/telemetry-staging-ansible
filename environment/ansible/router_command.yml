@@ -1,0 +1,18 @@
+---
+
+- hosts: Routers
+  remote_user: vagrant
+  #become: true
+  gather_facts: no
+
+  tasks:
+
+  - name: "Executing: {{ command }}"
+    iosxr_command:
+      commands: "{{ command }}"
+    register: config
+
+  - name: "Output for: {{ command }}" 
+    debug:
+      var: config.stdout_lines
+

@@ -1,0 +1,58 @@
+#-*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+require 'yaml'
+settings = YAML.load_file 'pod.yaml'
+
+Vagrant.configure("2") do |config|
+  config.vm.define "router" do |router| 
+    router.vm.box = "IOS-XRv"
+    router.vm.network :private_network, ip: settings['router']['gig-eth-0'], auto_config: false
+    router.vm.network :private_network, virtualbox__intnet: settings['router']['link-eth2'], auto_config: false, mac: "123456789001"
+    router.vm.network :private_network, virtualbox__intnet: settings['router']['link-eth3'], auto_config: false, mac: "123456789002"
+    router.vm.network :forwarded_port, guest: 22, host: settings['router']['router_ssh'], host_ip: "0.0.0.0", id: "ssh", auto_correct: true
+    router.vm.network :forwarded_port, guest: 830, host: settings['router']['netconf_tcp'], host_ip: "0.0.0.0", auto_correct: false
+    router.vm.network :forwarded_port, guest: 830, host: settings['router']['grpc'], host_ip: "0.0.0.0", auto_correct: false
+
+    router.vm.provision "file", source: "configs/rtr_config", destination: "/home/vagrant/rtr_config"  
+    router.vm.provision "shell" do |s|
+        s.path =  "scripts/apply_config.sh"
+        s.args = ["/home/vagrant/rtr_config"]
+    end
+  end
+
+  config.vm.define "server" do |server|
+    server.vm.box = "ubuntu/trusty64"
+    #server.vm.box = "KPIG_040118"
+    server.vm.network :private_network, ip: settings['server']['eth1'] 
+    server.vm.network :private_network, virtualbox__intnet: settings['server']['link-eth2'], ip: "1.1.1.2", auto_config: true
+    server.vm.network :private_network, virtualbox__intnet: settings['server']['link-eth3'], ip: "2.2.2.2", auto_config: true
+    server.vm.network :forwarded_port, guest: 22, host: settings['server']['server_ssh'], host_ip: "0.0.0.0", id: "ssh", auto_correct: true
+    # Grafana port
+    server.vm.network :forwarded_port, guest: 3000, host: settings['server']['grafana_tcp'] 
+    # Pipeline port
+    server.vm.network :forwarded_port, guest: 5432, host: settings['server']['pipeline_tcp'] 
+    # Pipeline port export metrics
+    server.vm.network :forwarded_port, guest: 8989, host: settings['server']['pipeline_metrics_tcp']
+    # Ostinato/drone port
+    server.vm.network :forwarded_port, guest: 7878, host: settings['server']['ostinato_tcp'] 
+    # InfluxDB ports
+    server.vm.network :forwarded_port, guest: 8083, host: settings['server']['influxDB_1']
+    server.vm.network :forwarded_port, guest: 8086, host: settings['server']['influxDB_2']
+    # Kapacitor
+    server.vm.network :forwarded_port, guest: 9092, host: settings['server']['kapacitor']
+    # Kafka
+    server.vm.network :forwarded_port, guest: 9093, host: settings['server']['kafka']
+
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = "2048"
+    end
+
+  end
+
+end

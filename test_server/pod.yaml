@@ -1,0 +1,22 @@
+router:
+   gig-eth-0: 192.168.10.2
+   link-eth2: link11
+   link-eth3: link12
+   router_ssh: 2012
+   netconf_tcp: 2830
+   grpc: 57789
+
+server:
+   eth1: 192.168.10.3
+   link-eth2: link11
+   link-eth3: link12
+   server_ssh: 2013
+   grafana_tcp: 3000
+   pipeline_tcp: 5432
+   pipeline_metrics_tcp: 8989
+   cadvisor_tcp: 9092
+   ostinato_tcp: 7878
+   influxDB_1: 8083
+   influxDB_2: 8086
+   kapacitor: 9092
+   kafka: 9093

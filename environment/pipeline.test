@@ -1,0 +1,68 @@
+[testbed]
+stage = xport_input
+type = tcp
+encap = st
+listen = :5432
+
+#[gRPCDialout]
+#stage = xport_input
+#type = grpc
+#encap = gpb
+#listen = :57500
+#tls = false
+
+#[gRPCDialout]
+#stage = xport_input
+#type = grpc
+#encap = gpb
+#listen = :57500
+#tls = true
+#tls_pem = /etc/ssl/certs/ip.pem
+#tls_key = /etc/ssl/certs/ip.key
+#tls_servername = 192.168.10.3 
+
+[gRPCDialin]
+stage = xport_input
+type = grpc
+encoding = gpbkv
+encap = gpb
+server = 192.168.10.2:57789
+subscriptions = 1
+tls = false
+username=mdt
+password=DDh68tet1ILnzpYck5y9UMd26NSoFtt8MWLyUTUSIFmeL7S/XAplOwB/rHPMl6P5WIpS9ckruf6zWd5yrRR4jgQc7B9PgFoV6pJ3DIhfpSs2uhlIFBfMcZHKvpGcGoVxP8NmYzeiK4MfQvon4wl+E5bZOYNToTYYKf3Fn+9IaQigkOWU4ixUcPt61es6mVuNlKq8VOWJ9RjbqEPE5C09vac1BA3MZsJDH7PpbUXuqUBbaPP4Y4ozwyK7jiPhdeeQOiDW/5ba4cK7OJ6A+uMHFFotQJtzhzUuSP2UzEbDyjOAOjJtO4XkECov7zcF3pH6v4kD25r1TdwEn0HVCQPr7ObMg0qu77hgQIMeQO8iZ7UXJYuoCX6rDYn4ceB5Xyx+mejLi5Ht7OEvRSUos/YVGx2rVwTcd6LQbLRmXwlMRQ+G7rReqzcUWGBzClTcQLPkKpizeL7D+RzXTl/uzoKjFyd0al+FPYri22edx1YVPazMIQ3NExB1vGB74EVoV+ntMb9vFraqnhG5y5cY0i3CBNnnVC7yphIMDzrAaqkYlzxmi1KrSNbZ6TxgnneYDojopxQYApyuCOSwjoFOvmg9YYWPF5kOPDPLy9k152c8NS4nWUfDeBZAgrlatDfMOOb3srFopih7bvyIV2OjzRWOhglylhUIbTQ50qcElYoq77s=
+
+#[mymetrics1]
+[influx]
+stage = xport_output
+type = metrics
+file = environment/metrics.json
+datachanneldepth = 1000
+output = influx
+influx = http://127.0.0.1:8086
+database = mdt_db
+workers = 10
+username=admin
+password=JFfcpyrYibhctUKzdXxN6xR7MpGC20vn+NhfoO/kI0hwhFvYX74pEkfxzywMfWd49IC8tM6z7GI4QNXetTEh1WQRaUgtvk1E1db630dBrTGRfCNPbhCb4igpdBup3IOfX5t7RpfImcpfIJ0stHY8E5QSddU3yCo+hS1evI/mni8IKmINfHosVHGa9jjQN+vlrbKjBDLIIyBpKkdLJgTWlso5wyc3bPVEmpMW8QElFtpcfE5QJC4enabJIACY+e0JtDNbkJ/bWnCW58dMLjOdRz9W7YwlASmO2XFhIFzt9ddvdGeh3oCL3yAtoj6CiFoPAJzoKQa8D7KFRCCjdQj807IEM95EMqrY0g+9fESsCWXQ3/JEZqrzlV/Uq2sepyDI5ItOQ90eet76FEdLDCuOGk6avxl8O6fpNiFZk/IRlGehq9ruUQRVxvhoG8Aq4ZQH6CNh//AN+QwTF+Pb8qZpX82v35SmO5ESAR1vxaQn17TNeUWg7ulSLKqnoBIcRX9Jw3vsA67vcdmVsma+PcZmgnYlk3QDIHp6u8VBPopYx7ZU76/i3F27dbY92/rQdCVlICbZhAXnRda8BCeYoqCjnO2PfEEODoWP6wgOHWjMsFSA4qVEX5Eh4Avg1D6wbMynw27kzOzOyM0+CqUJ3XlK1EEpeKvFoLCvyO2dXXKHj8w=
+
+[inspector]
+stage = xport_output
+type = tap
+file = log/dump.txt
+datachanneldepth = 1000
+!-- Influx config -->
+[test]
+line 1
+line 2 
+!-- Influx config -->
+[influx test]
+line prima
+line seconda
+!-- Influx config -->
+[influx test]
+line prima
+line seconda
+!-- Influx config -->
+[influx test]
+line prima
+line seconda

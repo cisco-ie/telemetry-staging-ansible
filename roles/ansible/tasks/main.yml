@@ -1,0 +1,37 @@
+---
+
+  - name: Install YDK and Ansible dependecies
+    # to be broken down between Ansible and YDK - mosly interest in Paramiko and its dependecies
+    apt:
+      state: present
+      update_cache: yes
+      name: "{{ item }}"
+    with_items:
+    - zlib1g-dev 
+    - python-lxml 
+    - libxml2-dev 
+    - libxslt1-dev 
+    - python-dev
+    - build-essential 
+    - libssl-dev 
+    - libffi-dev
+    tags: always
+
+  - name: Install software-properties-common (as dependecy for Ansible)
+    apt:
+      name: software-properties-common
+      state: present
+    tags: always
+
+  - name: Add ppa:ansible/ansible to APT repositories
+    apt_repository:
+      repo: ppa:ansible/ansible
+      state: present
+    tags: always
+
+  - name: Install ansible as APT package
+    apt:
+      name: ansible
+      state: present
+      update_cache: yes
+    tags: always

@@ -1,0 +1,49 @@
+!! XR configuration
+!
+hostname test_XR
+domain name cisco.com
+domain name-server 64.104.200.248
+!
+ntp
+ server 192.168.10.3
+ source GigabitEthernet0/0/0/0
+ update-calendar
+!
+interface GigabitEthernet0/0/0/0
+ ipv4 address 192.168.10.2 255.255.255.0
+ load-interval 30
+ no shutdown
+!
+interface GigabitEthernet0/0/0/1
+ ipv4 address 1.1.1.1 255.255.255.0
+ load-interval 30
+ no shutdown
+!
+interface GigabitEthernet0/0/0/2
+ ipv4 address 2.2.2.1 255.255.255.0
+ load-interval 30
+ no shutdown
+!
+grpc
+  port 57500
+
+router bgp 65000
+ bgp router-id 192.168.10.2
+ address-family ipv4 unicast
+ !
+ neighbor 192.168.10.3
+  remote-as 65000
+  address-family ipv4 unicast
+  !
+ !
+!
+ssh server v2
+ssh server netconf vrf default
+ssh server logging
+xml agent ssl
+xml agent tty
+netconf agent tty
+netconf-yang agent ssh
+!
+end
+

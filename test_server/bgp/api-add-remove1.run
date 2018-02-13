@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+import sys
+import time
+
+
+# while messages:
+#     message = messages.pop(0)
+#     sys.stdout.write( message + '\n')
+#     sys.stdout.flush()
+
+
+# time.sleep(10)
+
+# while messages1:
+#     message = messages1.pop(0)
+#     sys.stdout.write( message + '\n')
+#     sys.stdout.flush()
+
+next_hop="192.168.10.66"
+
+
+for x in range (31, 60):
+    for y in range (1, 100):
+        sys.stdout.write("announce route "+str(x)+"."+str(y)+".0.0/24 next-hop "+next_hop +'\n')
+        sys.stdout.flush()
+
+
+while True:
+    time.sleep(1)

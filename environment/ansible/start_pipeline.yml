@@ -1,0 +1,61 @@
+---
+
+# reporting changed for docker-compose, touch
+# Must parametrise the user and password for correct 
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+    tags:
+      - debug
+
+  tasks:
+
+  - name: "Create data directory {{ data_path }}"
+    file:
+      state: directory
+      path: "{{ data_path }}"
+      owner: "{{ user_id }}"
+      group: "{{ group_id }}"
+    become: false
+
+  - name: "Create log directory {{log_path}}"
+    file:
+      state: directory
+      path: "{{log_path}}"
+      owner: "{{ user_id }}"
+      group: "{{ group_id }}"
+    become: false
+
+  - name: Create dump.txt log file (required if you enable dump in pipeline.conf)
+    # Don't like but report changed if the file exist without creating it
+    file:
+      state: touch
+      path: "{{log_path}}/dump.txt"
+    become: false
+
+  - name: Create pipeline init service (/etc/init/pipeline.conf) 
+    copy:
+      src: "{{env_path}}/pipeline_init.conf"
+      dest: "/etc/init/pipeline.conf"
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - debug
+
+  - name: Start Pipeline as init service
+    service:
+      name: pipeline
+      state: started

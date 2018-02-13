@@ -1,0 +1,38 @@
+---
+
+- hosts: Routers
+  remote_user: vagrant
+  #become: true
+  gather_facts: no
+  vars:
+    template_cfg: "{{ lookup('file', template ) }}"
+
+  tasks:
+
+  - name: Ready to apply {{ template }}
+    debug:
+      #msg="{{lookup('file', ({{ template }})) }}"
+      msg="{{ template_cfg.split('\n') }}"
+
+  - pause:
+      prompt: "Press Return key to confirm - To abort a playbook press ctrl+c and then a"
+
+  - name: Applying template {{ template }}
+    iosxr_config:
+      provider:
+        host: "{{ ansible_host }}"
+        username: '{{ ansible_ssh_user }}'
+        password: '{{ ansible_ssh_pass }}'
+        port: "{{ ansible_port }}"
+      match: "{{ match }}"
+      src: '{{ template }}'
+
+  - name: Retrieve current MDT configuration
+    iosxr_command:
+      commands: show running-config telemetry model-driven
+    register: config
+
+  - name: Print current MDT Configuration
+    debug:
+      var: config.stdout_lines
+

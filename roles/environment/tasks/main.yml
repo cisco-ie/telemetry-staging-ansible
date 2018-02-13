@@ -1,0 +1,70 @@
+---
+  # This role takes care of the telemetry base environment.
+
+  - name: Copy environment directory
+    copy:
+      src: ./environment
+      dest: ~/
+    become: false
+    tags: always
+
+  - name: Copy utility to manage the environment
+    copy:
+      src: ./telemetry_utility.sh
+      dest: ~/telemetry_utility.sh
+      mode: 0744
+    become: false
+    tags: always
+
+  # disabling host_key_checking to avoid having to ssh to local host to use start_stop utility
+  - name: Copy ansible.cfg file to work with the environment
+    copy:
+      src: ./environment/ansible.cfg
+      dest: ~/ansible.cfg
+      mode: 0644
+    become: false
+    tags: always
+
+  - name: Copy logrotate policy for Docker containers logs in daily-cron directory
+    copy:
+      src: ./environment/docker-container
+      dest: /etc/logrotate.d/docker-container
+      mode: 0644
+    tags: always
+
+  - name: Clone Pipeline from Github
+    git: 
+      repo: 'https://github.com/cisco/bigmuddy-network-telemetry-pipeline.git'
+      dest: ~/pipeline
+      depth: 1
+    become: false  
+    register: cloneGit
+    #- debug: var=cloneGit
+    tags: always
+
+  - name: Install HTOP 
+    apt:
+      name: htop
+      state: present
+    tags: always
+ 
+  - name: Personalize username in env.yml
+    replace:
+      # replaced with name, path supported in Ansible 2.3
+      #path: environment/ansible/env.yml
+      name: environment/ansible/env.yml
+      regexp: 'user_id: <username>'
+      replace: 'user_id: "{{ ansible_ssh_user }}"'
+    become: false
+    tags: always
+
+  - name: Personalize username in Pipeline init configuration
+    replace:
+      # replaced with name, path supported in Ansible 2.3
+      #path: environment/pipeline_init.conf
+      name: environment/pipeline_init.conf
+      regexp: 'env APPUSER=<username>'
+      replace: 'env APPUSER="{{ ansible_ssh_user }}"'
+    become: false
+    tags: always
+

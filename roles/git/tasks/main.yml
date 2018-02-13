@@ -1,0 +1,20 @@
+---
+# Install git and easy_install
+- name: Install Git
+  apt:
+    name: git
+    state: present
+  tags: always
+
+  
+- name: Install easy_install
+  apt:
+    name: python-setuptools
+    state: present
+  tags: always
+
+- name: Install pip
+  easy_install:
+    name: pip
+    state: present
+  tags: always

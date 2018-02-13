@@ -1,0 +1,54 @@
+---
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+
+  - name: Checking Pipeline process status
+    service: 
+      name: pipeline
+      pattern: pipeline
+      enabled: yes
+    ignore_errors: True 
+    register: pipeline_up
+
+  - name: Check current containers status
+    # taking influx_ to discriminate from influx-cli container
+    shell: docker ps | grep -o 'influxdb_' | sed s/influxdb_/running/
+    register: influxdb_running
+
+  tasks:
+
+  - name: Update pipeline.conf for Influx
+    blockinfile:
+      path: "{{env_path}}/pipeline.conf"
+      state: absent
+      marker: "#<!-- {mark} Ansible Managed  - Influx Config -->"
+
+  - name: Reload Pipeline (init)
+    service:
+      name: pipeline
+      state: restarted
+    when: pipeline_up|succeeded
+
+  # Issue with Ansible module using state:present and stopped:yes because it starts the docker-compose and and then stop
+  # I want to stop only if it is already started (avoid creation of volumes data, log owned by root)
+  # Volumes are own by root but I start docker-compose from normal user
+  - name: Stop InfluxDB, Grafana and Kapacitor containers
+    docker_service:
+      project_src: "{{env_path}}"
+      state: present
+      stopped: yes
+    become: false
+    when: influxdb_running.stdout == "running" 

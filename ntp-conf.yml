@@ -1,0 +1,65 @@
+---
+
+# sudo vi /etc/ntp.conf
+# comment "server _.ubuntu"
+# sudo service ntp restart
+
+# check with
+# sudo ntpq -p
+# timedatectl
+
+- hosts: all
+  become: true
+  gather_facts: no
+  vars:
+    net_server: "10.67.30.111"
+
+  tasks:
+
+  - name: Update installation cache 
+    apt:
+      update_cache: yes
+      #upgrade: dist
+
+  - name: Install NTP
+    apt:
+      name: ntp
+      state: present
+
+  # Commands suitable for shell
+  # sudo sed -i -e 's/^\(server\)/#\1/g' /etc/ntp.conf
+  # sudo sed -i '/# Specify one or more NTP servers/a server {{net_server}}' /etc/ntp.conf
+
+  #to change name with path in Ansible version 2.3
+  - name: Comment default NTP servers
+    replace:
+      name: /etc/ntp.conf
+      regexp: '^server'
+      replace: '#server'
+
+  #to change name with path in Ansible version 2.3
+  - name:  Configure specified ntp server
+    lineinfile:
+      state: present 
+      name: /etc/ntp.conf 
+      insertafter: '# Specify one or more NTP servers'
+      line: 'server {{net_server}}'
+
+  - name: restart ntp
+    service: name=ntp state=restarted
+
+  - name: Make sure NTP is started up
+    service: name=ntp state=started enabled=yes
+    tags: ntp
+
+  - name: Successful completion message
+    vars:
+      msg: |
+          ************************************************************************************
+
+          Provisioning completed.
+
+          ************************************************************************************
+
+    debug:
+      msg: "{{ msg.split('\n') }}"

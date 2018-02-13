@@ -1,0 +1,41 @@
+---
+
+#  - name: Update installation cache 
+#    apt:
+#      update_cache: yes
+#      #upgrade: dist
+
+  - name: Install NTP
+    apt:
+      name: ntp
+      state: present
+    tags: always
+
+  # Commands suitable for shell
+  # sudo sed -i -e 's/^\(server\)/#\1/g' /etc/ntp.conf
+  # sudo sed -i '/# Specify one or more NTP servers/a server {{net_server}}' /etc/ntp.conf
+
+  #to change name with path in Ansible version 2.3
+  - name: Comment default NTP servers
+    replace:
+      name: /etc/ntp.conf
+      regexp: '^server'
+      replace: '#server'
+    tags: always
+
+  #to change name with path in Ansible version 2.3
+  - name:  Configure specified ntp server
+    lineinfile:
+      state: present 
+      name: /etc/ntp.conf 
+      insertafter: '# Specify one or more NTP servers'
+      line: 'server {{ntp_ip}}'
+    tags: always
+
+  - name: restart ntp
+    service: name=ntp state=restarted
+    tags: always
+
+  - name: Make sure NTP is started up
+    service: name=ntp state=started enabled=yes
+    tags: always

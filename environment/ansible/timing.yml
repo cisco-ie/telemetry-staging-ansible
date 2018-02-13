@@ -1,0 +1,36 @@
+---
+
+- hosts: router
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+    tags:
+      - debug
+
+  tasks:
+
+  - name: Check NTP syncronization on router
+    iosxr_command:
+      commands: show ntp status 
+      wait_for: result[0] contains "is synchronized"
+    register: ntp_status
+
+  - name: NTP status
+    debug:
+      var: ntp_status
+
+  - name: Check clock
+    iosxr_command:
+      commands: show clock
+    register: clock
+
+  - name: clock status
+    debug:
+      var: clock
+

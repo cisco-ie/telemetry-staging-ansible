@@ -1,0 +1,52 @@
+---
+
+# reporting changed for docker-compose, touch
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+    tags:
+      - debug
+
+  - name: Checking Pipeline process status
+    service: 
+      name: pipeline
+      pattern: pipeline
+      enabled: yes
+    ignore_errors: True 
+    register: pipeline_up
+
+  tasks:
+
+  - name: Update pipeline.conf for Apache Kafka
+    blockinfile:
+      path: "{{env_path}}/pipeline.conf"
+      state: absent
+      marker: "#<!-- {mark} Ansible Managed  - Kafka Config -->"
+
+  - name: Reload Pipeline (init)
+    service:
+      name: pipeline
+      state: restarted
+    when: pipeline_up|succeeded
+
+  # Updating and restarting Pipeline first to avoid metrics to be written in pipeline.log
+  - name: Stop Apache Kafka (single broker) and zookeper 
+    docker_service:
+      project_src: "{{env_path}}/kafka-docker"
+      files: "docker-compose-single-broker.yml"
+      state: present
+      stopped: yes
+    become: false
+

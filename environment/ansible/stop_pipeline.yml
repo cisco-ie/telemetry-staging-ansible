@@ -1,0 +1,35 @@
+---
+
+# reporting changed for docker-compose, touch
+# Must parametrise the user and password for correct 
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+    tags:
+      - debug
+
+  tasks:
+
+  - name: Stop Pipeline process ( doesn't stop Pipeline if manually launched)
+    service:
+      name: pipeline
+      state: stopped
+    #when: pipeline_init.stat.exists == True
+
+  - name: Remove pipeline.conf from upstart configuration (/etc/init/)
+    file:
+      state: absent
+      path: "/etc/init/pipeline.conf"
+

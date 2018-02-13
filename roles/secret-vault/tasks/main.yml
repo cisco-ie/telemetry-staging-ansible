@@ -1,0 +1,44 @@
+---  
+  
+  - name: Add temporary file for encryption
+    file:
+      path: ~/environment/ansible/vault_tmp.txt
+      state: touch
+      mode: "u=wr"
+    become: false
+    tags: always
+
+  - name: Add username password to encrypt-vault
+    lineinfile:
+      # to migrate to path that should be supported in 2.3
+      # path: ~/environment/ansible/vault_tmp.txt
+      name: ~/environment/ansible/vault_tmp.txt
+      line: '{{ ansible_ssh_pass }}'
+    become: false   
+    tags: always
+
+  - name: Copy template directory
+    copy:
+      src: ./environment/ansible/templates
+      dest: ~/environment/ansible/
+    become: false
+    tags: always
+
+  - name: Prepare secrets file
+    template:
+      src=environment/ansible/templates/secrets.j2
+      dest=~/environment/ansible/secrets.yml
+    become: false
+    tags: always
+
+  - name: Encrypt secrets file
+    command: ansible-vault encrypt ~/environment/ansible/secrets.yml --vault-password-file ~/environment/ansible/vault_tmp.txt
+    become: false
+    tags: always
+
+  - name: Remove temporary file for encryption
+    file:
+      path: ~/environment/ansible/vault_tmp.txt
+      state: absent
+    become: false
+    tags: always

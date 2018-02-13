@@ -1,0 +1,1 @@
+Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,EncodingPath=Cisco-IOS-XR-wdsysmon-fd-oper:system-monitoring/cpu-utilization,Producer=Marco,node-name=0/RSP0/CPU0,process-cpu__process-name=marcoprocess total-cpu-one-minute=20i

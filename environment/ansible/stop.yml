@@ -1,0 +1,54 @@
+---
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+
+  - name: Check if Pipeline service is configured
+    stat:
+      path: "/etc/init/pipeline.conf"
+    register: pipeline_init
+
+  # Status is reported Running also when down ???
+  #- name: Check if Docker-compose status
+  #  docker_service:
+  #    project_src: "{{env_path}}"
+  #  register: test
+
+  # docker info | grep Running: | tr -d '\n' | tail -c 1
+  # Just need to
+  - name: Check if containers are running
+    #shell: docker ps | grep -c influxdb
+    shell: docker ps | grep -o 'influxdb:' | sed s/influxdb:/running/
+    register: influxdb_running
+
+  tasks:
+
+  - name: Stop Pipeline process ( doesn't stop Pipeline if manually launched)
+    service:
+      name: pipeline
+      state: stopped
+    when: pipeline_init.stat.exists == True
+
+
+  # Issue if stopped state:present and stopped:yes, start the docker-compose and and then stop
+  # I want to stop only if it is already started (avoid creation of volumes data, log owned by root)
+  # Volumes are own by root but I start docker-compose from normal user
+  - name: Stop InfluxDB, Grafana and Kapacitor containers
+    docker_service:
+      project_src: "{{env_path}}"
+      state: present
+      stopped: yes
+    become: false
+    when: influxdb_running.stdout == "running" 

@@ -1,0 +1,52 @@
+---
+  # This roles takes care of utilities used when deploying the XRv and server for demonstrations or labs.
+
+  - name: Install ExaBGP for emulating BGP peers (to move in lab role)
+    pip:
+      name: 'exabgp==3.4.18'
+      state: present
+    tags: Lab
+
+  - name: Install Python Kafka module to test consumer (to move in lab role)
+    pip:
+      name: kafka
+      state: present
+    tags: Lab
+
+  - name: Install Pyang to explore YANG modules (to move in lab role)
+    pip:      
+      name: pyang
+      state: present
+    tags: Lab
+
+  - name: Clone current Yang module repository
+    git:
+      repo: 'https://github.com/YangModels/yang.git'
+      dest: ~/YangModels
+      depth: 1
+    become: false
+    tags: Lab
+
+  - name: Copy utility to manage demo router using Ansible
+    copy:
+      src: ./XR_demo.sh
+      dest: ~/XR_demo.sh
+      mode: 0744
+    become: false
+    tags: Lab
+
+  # copy of the directory doesn't preserve the execute on web-alarm.py
+  - name: Add execute privilege to web-alarm.py
+    file:
+      path: ./environment/web-alarm.py
+      mode: 0744
+    become: false
+    tags: Lab
+
+  - name: Install Python WEB module for testing kapacitor POST allarms locally
+    pip:
+      name: web.py
+      state: present
+    tags: Lab
+
+

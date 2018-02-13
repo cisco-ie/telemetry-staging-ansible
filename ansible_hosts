@@ -1,0 +1,5 @@
+# YOUR_SERVER_IP ansible_user=<YOUR_SSH_USERNAME>
+# example: "1.1.1.1 ansible_user=cisco"
+
+# Uncomment this line to use the included test Vagrant server
+192.168.10.3 ansible_host=127.0.0.1 ansible_port=2013  ansible_user=vagrant

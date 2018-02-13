@@ -1,0 +1,165 @@
+---
+
+# reporting changed for docker-compose, touch
+# Must parametrise the user and password for correct 
+
+- hosts: server
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+
+  - name: Retriving secrets
+    include_vars: "secrets.yml"
+    no_log: true
+
+  - name: Pre-staging phase - including configuration variables
+    include_vars:
+      file: env.yml
+    no_log: True
+    tags:
+      - debug
+  ### !!! TO do still to update pipeline_init.conf based on env.yml
+
+
+  tasks:
+
+  - name: Create pipeline service (using init) 
+    copy:
+      src: "{{env_path}}/pipeline_init.conf"
+      dest: "/etc/init/pipeline.conf"
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - debug
+
+
+#  - name: Copy pipeline service (using syslogd) 
+#    copy:
+#      src: "{{env_path}}/pipeline_init.service"
+#      #dest: "/etc/systemd/system/pipeline.service"
+#      dest: "/usr/local/bin/pipeline.service"
+#      owner: root
+#      group: root
+#      mode: 0644
+#    tags:
+#      - debug
+
+
+#  - name: Copy pipeline start service (using syslogd)
+#    copy:
+#      src: "{{env_path}}/pipeline_start.sh"
+#      dest: "/usr/local/bin/pipeline_start.sh"
+#      owner: root
+#      group: root
+#      mode: 0744
+#    tags:
+#      - debug
+
+#  - name: Copy pipeline stop service (using syslogd)
+#    copy:
+#      src: "{{env_path}}/pipeline_stop.sh"
+#      dest: "/usr/local/bin/pipeline_stop.sh"
+#      owner: root
+#      group: root
+#      mode: 0744
+#    tags:
+#      - debug
+
+  - name: Create data directory
+    file:
+      state: directory
+      path: "{{ data_path }}"
+      owner: "{{ user_id }}"
+      group: "{{ group_id }}"
+    become: false
+
+  - name: Create log directory
+    file:
+      state: directory
+      path: "{{log_path}}" 
+      owner: "{{ user_id }}"
+      group: "{{ group_id }}"
+    become: false
+
+  - name: Create dump.txt log file (required if you enable dump in pipeline.conf)
+    file:
+      state: touch
+      path: "{{log_path}}/dump.txt"
+    become: false
+
+  - name: Start Influx, Grafana and Kapacitor containers
+    docker_service:
+      project_src: "{{env_path}}"
+      state: present
+    become: false
+
+  - name: Pause 10 seconds to let Influx and Grafana to start and download the plugin before configuring
+    pause:
+      seconds: 10  
+
+  #- name: Check if mdt_db database already exist
+  #  uri:
+  #    url: http://localhost:8086/query
+  #    method: POST
+  #    body: "q=show databases"
+  #    status_code: 200
+  #    return_content: yes 
+  #  register: db_check
+
+  #- debug: var=(db_check.content|from_json) 
+
+ 
+  - name: Creating mdt_db database 
+    #  curl -i -XPOST http://localhost:8086/query --data-urlencode "q=CREATE DATABASE mdt_db with duration 6h replication 1 shard duration 1h name test6h"
+    # Tested with CURL that return state is 200 and not 201 as should be for create on POST
+    uri: 
+      url: http://localhost:8086/query
+      method: POST
+      body: "q=CREATE DATABASE mdt_db with duration 6h replication 1 shard duration 1h name test6h"
+      status_code: 200
+    #when: "'mdt_db' not in db_check"
+    #when:  (db_check.content|from_json)['results'].series.values not defined    
+
+  - name: Check if InfluxDB datasource exist Grafana
+    uri:
+      url: http://localhost:3000/api/datasources/InfluxDB
+      user: admin
+      password: admin
+      force_basic_auth: yes
+    register: datasource_status
+    failed_when: false
+    changed_when: false
+
+  #- debug: var=datasource_status
+
+  - name: Adding the InfluxDB datasource in Grafana
+   # curl -s 'http://admin:admin@127.0.0.1:3000/api/datasources' -X POST -H   'Content-Type: application/json;charset=UTF-8' --data-binary '{"name":"InfluxDB","type":"influxdb","access":"proxy","url":"http://environment_influxdb_1:8086","password":"admin","user":"admin","database":"mdt_db","basicAuth":false,"basicAuthUser":"","basicAuthPassword":"","withCredentials":false,"isDefault":false,"jsonData":{},"tlsAuth":{"tlsCACertSet":false,"tlsClientCertSet":false,"tlsClientKeySet":false}}'
+    uri:
+      url: http://localhost:3000/api/datasources
+      method: POST
+      user: admin
+      password: admin
+      body: 
+        name: "InfluxDB"
+        type: "influxdb"
+        url: "http://environment_influxdb_1:8086"
+        access: "proxy"
+        isDefault: true
+        database: "mdt_db"
+      force_basic_auth: yes
+      status_code: 200
+      body_format: json
+    when: datasource_status.status == 404
+
+  - name: Start Pipeline (init)
+    service:
+      name: pipeline
+      state: started
+
+#  - name: Start Pipeline
+#    systemd:
+#      name: pipeline
+#      state: started
+#      enabled: yes

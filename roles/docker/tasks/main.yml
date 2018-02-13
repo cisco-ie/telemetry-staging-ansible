@@ -1,0 +1,101 @@
+---
+
+# take care of installing the latest version of Docker
+# Tested on Trusty
+
+  - name: Get system uname (used to download the right packages)
+    command: uname -r
+    register: os_uname    
+    tags: always
+
+  - name: Install dependecies for Docker
+    apt: 
+      pkg: "{{item}}" 
+      state: present 
+    with_items:
+      - lxc
+      - wget
+      - git
+      - bsdtar
+      - curl
+      - linux-image-extra-{{os_uname.stdout}}
+    tags: always
+
+  #To address the issue (modprobe: FATAL: Module aufs not found)
+  - name: Add module aufs (suggested for Docker)
+    modprobe:
+      name: aufs
+      state: present
+    tags: always
+
+  - name: Install SSL tools, dependecy for get_url task
+    pip:
+      name: "{{item}}" 
+      state: present
+    with_items:
+    - pyOpenSSL
+    - ndg-httpsclient
+    - pyasn1
+    tags: always
+
+  - name: Download Docker from docker.io
+    #become: sudo
+    get_url:
+      url: https://get.docker.io/
+      dest: /tmp/docker.sh
+      force: yes
+      mode: 0777
+      force_basic_auth: no
+      validate_certs: no
+    tags: always
+
+  - name: Execute Docker installation script
+    shell: sh /tmp/docker.sh
+    tags: always
+
+  - name: Add Vagrant user to Docker group
+    user:
+      #name: vagrant
+      name: "{{ ansible_user }}" 
+      group: docker
+    tags: always
+
+  - name: Configure Docker's default to use http proxy if configured in system'
+    lineinfile:
+      name: /etc/default/docker
+      state: present
+      regexp: 'export http_proxy'
+      line: 'export http_proxy="{{ansible_env.http_proxy}}"'
+    when: '"http_proxy" in ansible_env'
+    tags: always
+
+  - name: Configure Docker's default to use https proxy if configured in system'
+    lineinfile:
+      name: /etc/default/docker
+      state: present
+      regexp: 'export https_proxy'
+      line: 'export https_proxy="{{ansible_env.https_proxy}}"'
+    when: '"https_proxy" in ansible_env'
+    tags: always
+
+  - name: Configure Docker's default to use no_proxy if configured in system'
+    lineinfile:
+      name: /etc/default/docker
+      state: present
+      regexp: 'export no_proxy'
+      line: 'export no_proxy="{{ansible_env.no_proxy}}"'
+    when: '"no_proxy" in ansible_env'
+    tags: always
+
+  - name: Reload Docker service
+    service:
+      name: docker
+      state: restarted
+    tags: always
+
+  - name: Install Docker-Compose
+    pip:
+      name: docker-compose 
+      version: 1.15.0
+      state: present
+    tags: always
