@@ -1,0 +1,14 @@
+---
+
+  - name: Add ppa:jonathonf/python-2.7 to APT repositories to update python
+    apt_repository:
+      repo: ppa:jonathonf/python-2.7
+      state: present
+    tags: always
+
+  - name: Update Python 2.7 as APT package
+    apt:
+      name: python2.7
+      state: latest
+      update_cache: yes
+    tags: always

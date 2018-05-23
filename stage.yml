@@ -9,14 +9,16 @@
 
   pre_tasks:
 
-    - name: Update and update all packages to the latest version
-      # Uncomment below for upgrade 
-      apt:
-        update_cache: yes
-        #upgrade: dist
-      tags: always
+    #- name: Update and update all packages to the latest version
+      # 23/5/18 commented out because duing a update when upgrading python
+    #  apt:
+    #    update_cache: yes
+    #    #upgrade: dist
+    #  tags: always
 
   roles:
+    ### Updating Python to version 2.7.14 required for Docker Compase installation
+    - python
 
     ### Installing easy_install and pip
     - git
